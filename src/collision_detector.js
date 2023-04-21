@@ -1,5 +1,13 @@
 import { CollisionHandler } from "./event_handler.js";
 
+export function addCollisionEntry(index, thisObject) {
+    if (CollisionDetector.xRay[index] && CollisionDetector.xRay[index].length > 0) {
+      CollisionDetector.xRay[index].push(thisObject)
+    } else {
+      CollisionDetector.xRay[index] = [thisObject]
+    }
+  }
+
 /**
  * Diese Klasse beinhaltet Funktionen die verwendet werden um
  * Kollisionen zwischen Kacheln zu erkennen.
@@ -42,7 +50,7 @@ export default class CollisionDetector {
         const possibleCollisions = Object.entries(CollisionDetector.xRay).filter(([key, value]) => {
             return value.length > 1
         })
-        console.log(possibleCollisions)
+        console
     }
 
     /**
