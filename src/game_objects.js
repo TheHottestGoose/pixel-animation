@@ -1,7 +1,7 @@
 import {AnimationHandler, CollisionHandler, GravityHandler, HandlerManager} from "./event_handler.js"
 import { findAndRemoveFromList } from "./utils.js"
 import TileRegistry from "./tile_registry.js"
-import CollisionDetector , {addCollisionEntry} from "./collision_detector.js"
+import CollisionDetector, { addCollisionEntry} from "./collision_detector.js"
 import Camera from "./camera.js"
 import Game from "./game.js"
 import Map from "./map.js"
