@@ -18,6 +18,11 @@ export default class CollisionDetector {
 
     }
 
+    static xRay = {}
+    static clearXRay() {
+        CollisionDetector.xRay = {}
+    }
+
     static clear() {
       CollisionDetector.layers = {
         world: [],
@@ -34,13 +39,10 @@ export default class CollisionDetector {
      * Layern geprüft.
      */
     static checkCollision(layerName){
-        if (layerName === "all") {
-            Object.entries(CollisionDetector.layers).forEach(([_, currentLayer]) => {
-                CollisionDetector.detectCollisionsInLayer(currentLayer)
-            })
-        } else {
-            CollisionDetector.detectCollisionsInLayer(CollisionDetector.layers[layerName])
-        }
+        const possibleCollisions = Object.entries(CollisionDetector.xRay).filter(([key, value]) => {
+            return value.length > 1
+        })
+        console.log(possibleCollisions)
     }
 
     /**
@@ -75,9 +77,9 @@ export default class CollisionDetector {
         if ( h1.getRight() > h2.getLeft() && h1.getLeft() < h2.getRight()) {
             if ( h1.getBottom() > h2.getTop() && h1.getTop() < h2.getBottom() ) {
                 return true
-            }
         }
-        return false
+        }
+                return false
     }
     
 }

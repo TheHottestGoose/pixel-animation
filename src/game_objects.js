@@ -1,9 +1,10 @@
-import EventHandler, {AnimationHandler, CollisionHandler, GravityHandler, HandlerManager} from "./event_handler.js"
+import {AnimationHandler, CollisionHandler, GravityHandler, HandlerManager} from "./event_handler.js"
 import { findAndRemoveFromList } from "./utils.js"
 import TileRegistry from "./tile_registry.js"
-import CollisionDetector from "./collision_detector.js"
+import CollisionDetector , {addCollisionEntry} from "./collision_detector.js"
+import Camera from "./camera.js"
 import Game from "./game.js"
-
+import Map from "./map.js"
 
 /**
  * Dies ist die Basisklasse für alle Spiel-Objekte.
@@ -37,11 +38,16 @@ export class GameObject {
    * @param {CanvasRenderingContext2D} ctx Das Canvas, worauf das Spiel-Objekt gezeichnet werden soll.
    */
   draw(ctx) {
+    // console.log(Game.canvas.width, Game.canvas.height, this.x, this.y)
+    const transform = ctx.getTransform()
+    // console.log(transform.e, transform.f)
+    if (this.x > -(transform.e + this.tileSize) && this.y > -(transform.f - this.tileSize) && this.x < Game.canvas.width - transform.e && this.y < Game.canvas.height - transform.f) {
     ctx.drawImage(
       this.sheet,
       this.col * this.tileSize, this.row * this.tileSize, this.tileSize, this.tileSize,
       this.x, this.y, this.tileSize, this.tileSize
     )
+    }
   }
 
   /**
@@ -64,9 +70,15 @@ export class GameObject {
    */
   update(){
     this.handlers && this.handlers.runAll(this)
+    if (this.collisionTags.length > 0){
+      const index = (this.x / this.tileSize) + (this.y / this.tileSize) * Map.width
+      if (CollisionDetector.xRay[index] && CollisionDetector.xRay[index].length > 0) {
+        CollisionDetector.xRay[index].push(this)
+      } else {
+        CollisionDetector.xRay[index] = [this]
+      }
+    }
   }
-
-
 }
 
 
@@ -771,7 +783,6 @@ export class Player extends AnimatedGameObject {
     this.col = 1
     this.speed = 3
     this.handlers = new HandlerManager([
-      new EventHandler(),
       new CollisionHandler(),
       new AnimationHandler({ framesPerAnimation: 15, numberOfFrames: 3})
     ])
@@ -804,10 +815,12 @@ export class Player extends AnimatedGameObject {
       this.row = 0
     } else if (direction === "left") {
       this.dx = this.dx + (-1) * this.speed
-      this.row = 3
+      this.row = 1
+      Camera.shiftBackground(1)
     } else if (direction === "right") {
       this.dx = this.dx + (1) * this.speed
-      this.row = 1
+      this.row = 2
+      Camera.shiftBackground(-1)
     }
   }
 }
